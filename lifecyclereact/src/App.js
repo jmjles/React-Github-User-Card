@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import UserCard from './components/userCard'
+import { Container, Grid } from '@material-ui/core';
+
 const axios = require('axios');
 
  class App extends Component {
@@ -6,7 +9,7 @@ const axios = require('axios');
      user:{},
      followers:[]
    }
-   
+
    async componentDidMount(){
      const res = await axios('https://api.github.com/users/jmjles')
      this.user(res.data)
@@ -14,35 +17,40 @@ const axios = require('axios');
      this.followers(followersRes.data)
    }
 
-   user = ({avatar_url,bio,name,url}) => {
+   user = ({avatar_url,bio,name,html_url}) => {
     this.setState({
       user:{
         avatar:avatar_url,
         bio,
         name,
-        link:url
+        link:html_url
       }
     })
  }
 
  followers = (myFollowers) => {
-   myFollowers.map(({avatar_url,url,login})=>{
+   myFollowers.map(({avatar_url,url,login})=>
     this.setState((prevState)=>({
       followers:[...prevState.followers,
         {
           avatar:avatar_url,
+          name:login,
           link:url,
-          name:login
         }
         ]})
     )
-   })
+   )
 }
   render() {
     return (
-      <div>
-        
-      </div>
+      <Container>
+        <Grid container justify='center'>
+          <UserCard user={this.state.user}/>
+        </Grid>
+        <Grid container justify='space-around'>
+          <UserCard user={this.state.followers}/>
+        </Grid>
+      </Container>
     )
   }
 }
