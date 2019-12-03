@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import UserCard from './components/userCard'
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid, Button, Grow } from '@material-ui/core';
 
 const axios = require('axios');
 
  class App extends Component {
    state={
      user:{},
-     followers:[]
+     followers:[],
+     grow:false
    }
 
    async componentDidMount(){
@@ -29,27 +30,48 @@ const axios = require('axios');
  }
 
  followers = (myFollowers) => {
-   myFollowers.map(({avatar_url,url,login})=>
+   myFollowers.map(({avatar_url,html_url,login})=>
     this.setState((prevState)=>({
       followers:[...prevState.followers,
         {
           avatar:avatar_url,
           name:login,
-          link:url,
+          link:html_url,
         }
         ]})
     )
    )
-}
+} 
+  handleClick =()=>{
+    this.setState({
+      followers:[],
+      user:{}
+    })
+  }
+
+  followersBtn = () => {
+    this.setState(prevState => ({
+      grow: !prevState.grow
+    }))
+  }
   render() {
     return (
-      <Container>
+      <Container align='center'>
         <Grid container justify='center'>
           <UserCard user={this.state.user}/>
         </Grid>
-        <Grid container justify='space-around'>
-          <UserCard user={this.state.followers}/>
-        </Grid>
+        <Button color='secondary' onClick={this.followersBtn} variant='contained'>
+          Display the Followers!
+        </Button>
+        <Grow in={this.state.grow}>
+          <Grid container justify='space-around'>
+            <UserCard user={this.state.followers}/>
+          </Grid>
+        </Grow>
+        
+        <Button onClick={this.handleClick} variant='contained' color={"primary"}>
+          Clear The STATE!
+        </Button>
       </Container>
     )
   }
